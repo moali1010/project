@@ -1,19 +1,25 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from .validators import phone_validator
 
-# Create your models here.
+
 class User(AbstractUser):
-    GENDER_CHOICES = (
-        ('M', "Male"),
-        ('F', "Female")
-    )
-    address = models.TextField(null=True, blank=True)
-    age = models.PositiveSmallIntegerField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    gender = models.CharField(
-        max_length=1, choices=GENDER_CHOICES, null=True, blank=True
-    )
-    phone = models.CharField(
-        max_length=15, null=True, blank=True
-    )
+    class Gender(models.TextChoices):
+        MALE = 'M', 'Male'
+        FEMALE = 'F', 'Female'
+        UNSET = 'MF', 'Unset'
+
+    phone = models.CharField(max_length=15, validators=[phone_validator], blank=True)
+    address = models.TextField(blank=True)
+    gender = models.CharField(max_length=2, choices=Gender.choices, default=Gender.UNSET)
+    age = models.PositiveSmallIntegerField(blank=True, null=True)
+    description = models.TextField(blank=True)
+
+    @property
+    def is_benefactor(self):
+        return hasattr(self, 'benefactor')
+
+    @property
+    def is_charity(self):
+        return hasattr(self, 'charity')
