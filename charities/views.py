@@ -12,11 +12,25 @@ from charities.serializers import (
 
 
 class BenefactorRegistration(APIView):
-    pass
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        benefactor_serializer = BenefactorSerializer(data=request.data)
+        if benefactor_serializer.is_valid():
+            benefactor_serializer.save()
+            return Response(benefactor_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(benefactor_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CharityRegistration(APIView):
-    pass
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        charity_serializer = CharitySerializer(data=request.data)
+        if charity_serializer.is_valid():
+            charity_serializer.save()
+            return Response(charity_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(charity_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Tasks(generics.ListCreateAPIView):
@@ -30,10 +44,10 @@ class Tasks(generics.ListCreateAPIView):
             **request.data,
             "charity_id": request.user.charity.id
         }
-        serializer = self.serializer_class(data = data)
-        serializer.is_valid(raise_exception = True)
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status = status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:
