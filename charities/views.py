@@ -17,7 +17,7 @@ class BenefactorRegistration(APIView):
     def post(self, request, *args, **kwargs):
         benefactor_serializer = BenefactorSerializer(data=request.data)
         if benefactor_serializer.is_valid():
-            benefactor_serializer.save()
+            benefactor_serializer.save(user=request.user)
             return Response(benefactor_serializer.data, status=status.HTTP_201_CREATED)
         return Response(benefactor_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -28,7 +28,7 @@ class CharityRegistration(APIView):
     def post(self, request, *args, **kwargs):
         charity_serializer = CharitySerializer(data=request.data)
         if charity_serializer.is_valid():
-            charity_serializer.save()
+            charity_serializer.save(user=request.user)
             return Response(charity_serializer.data, status=status.HTTP_201_CREATED)
         return Response(charity_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
